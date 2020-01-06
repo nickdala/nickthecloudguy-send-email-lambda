@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Serverless for nickthecloudguy
+#Parameters: 
+#  TopicNameParameter: 
+#    Type: String
+Resources:
+  SendEmailFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: bin/
+      Handler: nickthecloudguy-email
+      Runtime: go1.x
+      MemorySize: 128
+      #Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      Events:
+        SendEmail:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /contact
+            Method: POST
+      #Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+      #  Variables:
+      #    PARAM1: VALUE
+      #Timeout: 3
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt ContactFormTopic.TopicName
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref ContactFormTopic
+  ContactFormTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint: nickthecloudguy@gmail.com
+          Protocol: email

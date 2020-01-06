@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless for nickthecloudguy
+Resources:
+  SendEmailFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://nickthecloudguy-email/2edf50cd563e80554014068f45dc3631
+      Handler: nickthecloudguy-email
+      Runtime: go1.x
+      MemorySize: 128
+      Events:
+        SendEmail:
+          Type: Api
+          Properties:
+            Path: /contact
+            Method: POST
+      Policies:
+      - SNSPublishMessagePolicy:
+          TopicName:
+            Fn::GetAtt:
+            - ContactFormTopic
+            - TopicName
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN:
+            Ref: ContactFormTopic
+  ContactFormTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+      - Endpoint: nickthecloudguy@gmail.com
+        Protocol: email
