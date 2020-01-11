@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -11,6 +12,10 @@ import (
 type BodyRequest struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
+	Message string `json:"message"`
+}
+
+type Response struct {
 	Message string `json:"message"`
 }
 
@@ -34,9 +39,18 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{}, err
 	}
 
+	response := &Response{
+		Message: fmt.Sprintf("Sent email to %v with email %v", bodyRequest.Name, bodyRequest.Email),
+	}
+
+	responseBody, _ := json.Marshal(response)
+
 	return events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("Sent email to %v with email %v", bodyRequest.Name, bodyRequest.Email),
-		StatusCode: 200,
+		Headers: map[string]string{
+			"Access-Control-Allow-Origin": "https://www.nickthecloudguy.com",
+		},
+		Body:       string(responseBody),
+		StatusCode: http.StatusOK,
 	}, nil
 }
 

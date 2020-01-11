@@ -2,10 +2,82 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless for nickthecloudguy
 Resources:
+  NickTheCloudGuyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      DefinitionBody:
+        swagger: '2.0'
+        info:
+          version: '2016-12-09T04:29:17Z'
+          title: nickthecloudguy api
+        basePath: /prod
+        schemes:
+        - https
+        paths:
+          /contact:
+            post:
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  schema:
+                    $ref: '#/definitions/Empty'
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: '200'
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Origin: '''https://www.nickthecloudguy.com'''
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SendEmailFunction.Arn}/invocations
+                passthroughBehavior: when_no_templates
+                httpMethod: POST
+                contentHandling: CONVERT_TO_TEXT
+                type: aws_proxy
+            options:
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  schema:
+                    $ref: '#/definitions/Empty'
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: '200'
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: '''POST,OPTIONS'''
+                      method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+                      method.response.header.Access-Control-Allow-Origin: '''https://www.nickthecloudguy.com'''
+                requestTemplates:
+                  application/json: '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+        definitions:
+          Empty:
+            type: object
+            title: Empty Schema
   SendEmailFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://nickthecloudguy-email/2edf50cd563e80554014068f45dc3631
+      CodeUri: s3://nickthecloudguy-email/dc1e6817faed3780a6e79c6ae806734a
       Handler: nickthecloudguy-email
       Runtime: go1.x
       MemorySize: 128
@@ -13,6 +85,8 @@ Resources:
         SendEmail:
           Type: Api
           Properties:
+            RestApiId:
+              Ref: NickTheCloudGuyApi
             Path: /contact
             Method: POST
       Policies:
@@ -31,3 +105,8 @@ Resources:
       Subscription:
       - Endpoint: nickthecloudguy@gmail.com
         Protocol: email
+Outputs:
+  RestAPIID:
+    Description: Rest API ID
+    Value:
+      Ref: NickTheCloudGuyApi
