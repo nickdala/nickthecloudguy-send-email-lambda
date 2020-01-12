@@ -16,7 +16,7 @@
   version = "v1.13.3"
 
 [[projects]]
-  digest = "1:2c437477da9e282e15dbb0ecfae087fe5bfae19a41b693dd0ef2934d5e3ed566"
+  digest = "1:1a3027bdce7a9c6c76814814585b1dd4760e8a5725a01367ebb79bdd4d6500b0"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -43,6 +43,7 @@
     "internal/sdkrand",
     "internal/sdkuri",
     "internal/shareddefaults",
+    "internal/strings",
     "private/protocol",
     "private/protocol/json/jsonutil",
     "private/protocol/query",
@@ -54,8 +55,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "a1e6946e8014a793d989e64ef5566315010ce898"
-  version = "v1.27.0"
+  revision = "0b1278033d8e0b68eb64faec9ca9512ccd8695e0"
+  version = "v1.28.0"
 
 [[projects]]
   digest = "1:bb81097a5b62634f3e9fec1014657855610c82d19b9a40c17612e32651e35dca"
