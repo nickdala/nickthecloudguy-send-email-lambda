@@ -6,24 +6,24 @@ STACK_NAME := nickthecloudguy-email
 TEMPLATE = template.yaml
 PACKAGED_TEMPLATE = packaged.yaml
 
-.PHONY: lambda
-lambda:
-	dep ensure -v
-	GOOS=linux GOARCH=amd64 go build -o bin/nickthecloudguy-email ./nickthecloudguy-email
+#.PHONY: lambda
+#lambda:
+#	dep ensure -v
+#	GOOS=linux GOARCH=amd64 go build -o bin/nickthecloudguy-email ./nickthecloudguy-email
 
-.PHONY: clean
-clean: 
-	rm -rf ./bin ./vendor Gopkg.lock
+#.PHONY: clean
+#clean: 
+#	rm -rf ./bin ./vendor Gopkg.lock
 	
-.PHONY: build
-build: clean lambda
+#.PHONY: build
+#build: clean lambda
 
 .PHONY: run
 run: build
 	sam local start-api
 
 .PHONY: package
-package: build
+package:
 	sam package --template-file $(TEMPLATE) --s3-bucket $(S3_BUCKET) --output-template-file $(PACKAGED_TEMPLATE)
 
 .PHONY: deploy

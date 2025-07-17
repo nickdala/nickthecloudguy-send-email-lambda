@@ -11,7 +11,7 @@ Description: Serverless for nickthecloudguy
 #    Cors:
 #      AllowMethods: "'*'"
 #      AllowHeaders: "'*'"
-#      AllowOrigin: "'https://www.nickthecloudguy.com'"
+#      AllowOrigin: "'https://nickthecloudguy.com'"
 Resources:
   NickTheCloudGuyApi:
     Type: AWS::Serverless::Api
@@ -45,7 +45,7 @@ Resources:
                     default:
                       statusCode: "200"
                       responseParameters:
-                        method.response.header.Access-Control-Allow-Origin: "'https://www.nickthecloudguy.com'"
+                        method.response.header.Access-Control-Allow-Origin: "'https://nickthecloudguy.com'"
                   uri:
                     Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SendEmailFunction.Arn}/invocations
                   passthroughBehavior: "when_no_templates"
@@ -76,7 +76,7 @@ Resources:
                       responseParameters:
                         method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
                         method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-                        method.response.header.Access-Control-Allow-Origin: "'https://www.nickthecloudguy.com'"
+                        method.response.header.Access-Control-Allow-Origin: "'https://nickthecloudguy.com'"
                   requestTemplates:
                     application/json: "{\"statusCode\": 200}"
                   passthroughBehavior: "when_no_match"
@@ -89,10 +89,11 @@ Resources:
   SendEmailFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: bin/
-      Handler: nickthecloudguy-email
-      Runtime: go1.x
+      Handler: src/handlers/email_nick.emailHandler
+      Runtime: python3.13
       MemorySize: 128
+      Timeout: 100
+      Description: A HTTP post method to send message to SNS.
       #Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
       Events:
         SendEmail:

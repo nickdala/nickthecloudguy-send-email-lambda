@@ -34,7 +34,7 @@ Resources:
                   default:
                     statusCode: '200'
                     responseParameters:
-                      method.response.header.Access-Control-Allow-Origin: '''https://www.nickthecloudguy.com'''
+                      method.response.header.Access-Control-Allow-Origin: '''https://nickthecloudguy.com'''
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SendEmailFunction.Arn}/invocations
                 passthroughBehavior: when_no_templates
@@ -65,7 +65,7 @@ Resources:
                     responseParameters:
                       method.response.header.Access-Control-Allow-Methods: '''POST,OPTIONS'''
                       method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
-                      method.response.header.Access-Control-Allow-Origin: '''https://www.nickthecloudguy.com'''
+                      method.response.header.Access-Control-Allow-Origin: '''https://nickthecloudguy.com'''
                 requestTemplates:
                   application/json: '{"statusCode": 200}'
                 passthroughBehavior: when_no_match
@@ -74,13 +74,16 @@ Resources:
           Empty:
             type: object
             title: Empty Schema
+    Metadata:
+      SamResourceId: NickTheCloudGuyApi
   SendEmailFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://nickthecloudguy-email/dc1e6817faed3780a6e79c6ae806734a
-      Handler: nickthecloudguy-email
-      Runtime: go1.x
+      Handler: src/handlers/email_nick.emailHandler
+      Runtime: python3.13
       MemorySize: 128
+      Timeout: 100
+      Description: A HTTP post method to send message to SNS.
       Events:
         SendEmail:
           Type: Api
@@ -99,12 +102,17 @@ Resources:
         Variables:
           SNS_TOPIC_ARN:
             Ref: ContactFormTopic
+      CodeUri: s3://nickthecloudguy-email/3d400ecbad5960ad40e95032cd97dc15
+    Metadata:
+      SamResourceId: SendEmailFunction
   ContactFormTopic:
     Type: AWS::SNS::Topic
     Properties:
       Subscription:
       - Endpoint: nickthecloudguy@gmail.com
         Protocol: email
+    Metadata:
+      SamResourceId: ContactFormTopic
 Outputs:
   RestAPIID:
     Description: Rest API ID
